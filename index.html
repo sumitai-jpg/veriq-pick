@@ -80,7 +80,7 @@ b.onclick=function(){
 window.__vq=1;})()</script>
 <script>
 (function(){
-  var code=document.getElementById("vqcode").textContent.trim();
+  var code=document.getElementById("vqcode").textContent.trim().replace(/\s*\n\s*/g," ");
   document.getElementById("bm").setAttribute("href","javascript:"+code);
   document.getElementById("cp").onclick=function(){
     var b=this;
