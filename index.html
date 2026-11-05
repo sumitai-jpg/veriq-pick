@@ -7,30 +7,30 @@ body{margin:0;background:#fbfbfd;color:#14171c;font:15px/1.85 -apple-system,Blin
 .wrap{max-width:680px;margin:0 auto;padding:44px 22px 70px}
 h1{font-size:23px;letter-spacing:.01em;margin:0 0 6px}
 .lead{color:#6b7280;font-size:14px;margin:0 0 30px}
-h2{font-size:15px;margin:34px 0 10px;letter-spacing:.01em}
+h2{font-size:15px;margin:34px 0 10px}
 p{font-size:14px;color:#3d434d;margin:0 0 12px}
 a.btn{display:inline-block;background:#14171c;color:#fff;text-decoration:none;padding:13px 22px;border-radius:12px;font-weight:600;font-size:14px;cursor:grab;box-shadow:0 10px 26px rgba(16,20,30,.16)}
 button.copy{background:#fff;border:1px solid #e3e6ea;border-radius:11px;padding:12px 18px;font:inherit;font-size:13px;cursor:pointer;margin-left:8px}
 ol{padding-left:20px;font-size:14px;color:#3d434d} li{margin-bottom:7px}
 .card{background:#fff;border:1px solid #eceef2;border-radius:16px;padding:22px 24px;margin-top:14px}
-.tag{display:inline-block;font-size:11px;color:#6b7280;background:#f2f4f7;border-radius:20px;padding:3px 10px;margin-right:6px}
-code{background:#f2f4f7;border-radius:5px;padding:1px 5px;font-size:12.5px}
+code{background:#f2f4f7;border-radius:5px;padding:1px 5px;font-size:12.5px;word-break:break-all}
 .note{font-size:12.5px;color:#8b9099;margin-top:26px}
 </style></head><body><div class="wrap">
 <h1>チャットの答えを、その場で確かめる</h1>
 <p class="lead">ChatGPTの返答を選択して1クリック。Veriqが出典を読んで、主張ごとに裏付けを返します。無料プランのままで使えます。</p>
 
-<h2>PC（Chrome・Safari・Edge）</h2>
+<h2>Windows・Mac（Chrome・Edge・Safari）</h2>
 <div class="card">
   <p>下のボタンをブックマークバーにドラッグしてください。</p>
-  <a class="btn" id="bm" href="#" onclick="return false">Veriqで検証</a>
+  <a class="btn" id="bm" href="javascript:(function(){ var t=(String(window.getSelection?getSelection():&quot;&quot;)+&quot;&quot;).trim(); var u=&quot;https://sumitai-jpg.github.io/veriq-pick/verify.html&quot;; var w=window.open(u,&quot;veriq_verify&quot;,&quot;width=470,height=720,left=&quot;+Math.max(0,Math.round((screen.width-500)/2))+&quot;,top=90&quot;); if(!w){alert(&quot;ポップアップがブロックされました。アドレスバー右のアイコンから、このサイトのポップアップを許可してください。&quot;);return} var n=0,id=setInterval(function(){   try{w.postMessage({vq:&quot;hi&quot;},&quot;*&quot;)}catch(e){}   if(++n>50){clearInterval(id)} },250); window.addEventListener(&quot;message&quot;,function(e){   var d=e.data||{};   if(d.vq!==&quot;ready&quot;)return;   clearInterval(id);   try{w.postMessage({vq:&quot;text&quot;,text:t},&quot;*&quot;)}catch(err){} }); window.__vqOpen=1; })()">Veriqで検証</a>
   <button class="copy" id="cp">コードをコピー</button>
   <p style="margin-top:16px">使い方は3手順。</p>
   <ol>
     <li>ChatGPTの返答をマウスで選択する</li>
     <li>ブックマークバーの「Veriqで検証」を押す</li>
-    <li>パネルが出るので「検証する」。初回だけAPIキーを聞かれます</li>
+    <li>小さなウィンドウが開いて、判定と出典が出る。初回だけAPIキーを聞かれます</li>
   </ol>
+  <p style="color:#8b9099;font-size:13px">判定はこのウィンドウの中で動きます。ChatGPTのページは外部への通信を禁止しているので、そこから直接問い合わせると失敗します。</p>
 </div>
 
 <h2>iPhone（ショートカット）</h2>
@@ -40,51 +40,21 @@ code{background:#f2f4f7;border-radius:5px;padding:1px 5px;font-size:12.5px}
     <li>ショートカット.app →「＋」→ 新しいショートカット</li>
     <li>「クリップボードから取得」を追加</li>
     <li>「URLの内容を取得」を追加。URLに <code>https://solene-0e598278.base44.app/functions/veriqVerify</code></li>
-    <li>同じアクションの詳細を開き、方法を <code>POST</code>、本文を <code>JSON</code> にして<br>
-        項目 <code>text</code> に「クリップボード」の変数を入れる</li>
-    <li>ヘッダに <code>Authorization</code> / <code>Bearer 自分のキー</code> と <code>Content-Type</code> / <code>application/json</code> を追加</li>
-    <li>「辞書から値を取得」で <code>verdict</code> を取り、「結果を表示」</li>
+    <li>方法を <code>POST</code>、本文を <code>JSON</code>、項目 <code>text</code> に「クリップボード」の変数</li>
+    <li>ヘッダに <code>Authorization</code> / <code>Bearer 自分のキー</code> と <code>Content-Type</code> / <code>application/json</code></li>
+    <li>「辞書から値を取得」で <code>verdict</code> を取り「結果を表示」</li>
   </ol>
-  <p style="color:#8b9099;font-size:13px">ホーム画面に置けば、コピー→アイコン→判定まで2タップ。</p>
 </div>
 
 <h2>キーについて</h2>
 <p>キーは初回に入力すると、その端末のブラウザにだけ保存されます。OpenAIには渡りません。作り直すときは <a href="https://meshimeshi.jp/api/functions/veriqapi" style="color:#3b5bdb">キー発行ページ</a> へ。</p>
-<p class="note">ChatGPTのページは外部スクリプトの読み込みを制限しているため、この仕組みはコードをブックマークに直接持たせています。だから通信先はVeriqだけで、ページ側の制限に引っかかりません。</p>
-<script id="vqcode" type="text/plain">(function(){if(window.__vq){return}
-var A="https://solene-0e598278.base44.app/functions/veriqVerify",
-K=localStorage.getItem("veriq_key")||"";
-if(!/^vk_[A-Za-z0-9]{10,}$/.test(K)){K=(prompt("Veriq のAPIキー（vk_ で始まる）を入力。この端末だけに保存します")||"").trim();if(!/^vk_[A-Za-z0-9]{10,}$/.test(K)){return}localStorage.setItem("veriq_key",K)}
-var t=(String(getSelection())+"").trim(),
-d=document.createElement("div");
-d.style.cssText="position:fixed;right:16px;bottom:16px;z-index:2147483647;width:360px;max-width:calc(100vw - 32px);max-height:70vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 16px 44px rgba(16,20,30,.24);font:13px/1.62 -apple-system,BlinkMacSystemFont,'Noto Sans JP',sans-serif;color:#14171c";
-d.innerHTML='<div style="padding:13px 15px 9px;font-weight:700">Veriq <span style="font-weight:400;color:#8b9099;font-size:11px">主張を出典で確認</span><span style="float:right;cursor:pointer;color:#8b9099;font-weight:400">×</span></div><textarea placeholder="検証したい文章" style="display:block;width:100%;box-sizing:border-box;height:72px;padding:11px 15px;border:0;border-top:1px solid #eef0f3;border-bottom:1px solid #eef0f3;font:inherit;resize:vertical;outline:none"></textarea><div style="padding:10px 13px;display:flex;align-items:center;gap:10px"><button style="background:#14171c;color:#fff;border:0;border-radius:10px;padding:8px 15px;font:inherit;font-weight:600;cursor:pointer">検証する</button><span class="s" style="color:#8b9099;font-size:11px">準備OK</span></div><div class="r"></div>';
-document.body.appendChild(d);
-var q=function(s){return d.querySelector(s)},ta=q("textarea"),b=q("button"),s=q(".s"),r=q(".r");
-ta.value=t.slice(0,2000);
-d.firstChild.lastChild.onclick=function(){d.remove();window.__vq=0};
-b.onclick=function(){
- var n=ta.value.trim();if(!n){s.textContent="文章が空";return}
- b.disabled=1;s.textContent="出典を確認中…";var t0=Date.now();
- fetch(A,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+K},body:JSON.stringify({text:n})})
- .then(function(x){return x.json()}).then(function(j){
-  b.disabled=0;
-  if(!j.ok){s.textContent=j.error||"失敗";return}
-  var g=function(c){return c==="supported"?["✓","#1a7f4b"]:c==="contradicted"?["✕","#c02b2b"]:["=","#9a9fa8"]},
-  e=function(c){return String(c==null?"":c).replace(/[&<>"]/g,function(a){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[a]})};
-  r.innerHTML='<div style="padding:11px 15px;background:#fafbfc;font-size:12px;color:#5b616b;border-top:1px solid #eef0f3"><b>'+({pass:"裏付けあり",partial:"一部のみ裏付け",fail:"矛盾あり"}[j.verdict]||j.verdict)+'</b>'+(j.trust!=null?" · 支持度"+j.trust+"%":"")+" · "+((Date.now()-t0)/1000).toFixed(1)+"秒</div>"+
-  (j.claims||[]).map(function(c){var m=g(c.state);return '<div style="display:flex;gap:9px;padding:11px 15px;border-top:1px solid #f4f5f7"><b style="flex:0 0 14px;color:'+m[1]+'">'+m[0]+'</b><div style="flex:1;min-width:0">'+e(c.text)+(c.source_url?'<a href="'+e(c.source_url)+'" target="_blank" rel="noopener" style="display:block;font-size:11px;color:#3b5bdb;margin-top:2px;text-decoration:none">出典を開く</a>':'<span style="display:block;font-size:11px;color:#8b9099;margin-top:2px">'+(c.state==="contradicted"?"記載が矛盾":"出典に記載なし")+'</span>')+'</div></div>'}).join("");
-  s.textContent="残り"+(j.quota?j.quota.remaining:"-")+"回";
- }).catch(function(){b.disabled=0;s.textContent="通信に失敗"});
-};
-window.__vq=1;})()</script>
+<p class="note">判定画面だけを直接開くこともできます: <a href="https://sumitai-jpg.github.io/veriq-pick/verify.html" style="color:#3b5bdb">verify.html</a></p>
 <script>
 (function(){
-  var code=document.getElementById("vqcode").textContent.trim().replace(/\s*\n\s*/g," ");
-  document.getElementById("bm").setAttribute("href","javascript:"+code);
+  var code=document.getElementById("bm").getAttribute("href");
   document.getElementById("cp").onclick=function(){
     var b=this;
-    navigator.clipboard.writeText("javascript:"+code).then(function(){
+    navigator.clipboard.writeText(code).then(function(){
       b.textContent="コピーしました";setTimeout(function(){b.textContent="コードをコピー"},1600);
     });
   };
