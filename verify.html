@@ -1,0 +1,83 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veriq</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#fbfbfd;color:#14171c;font:14px/1.7 -apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}
+.hd{display:flex;align-items:baseline;gap:9px;padding:16px 20px 12px}
+.hd b{font-size:16px;letter-spacing:.02em}
+.hd span{font-size:11.5px;color:#8b9099}
+.body{padding:0 20px 24px}
+textarea{width:100%;height:120px;padding:13px 14px;border:1px solid #e3e6ea;border-radius:12px;font:inherit;resize:vertical;outline:none;background:#fff;color:#14171c}
+textarea:focus{border-color:#c9ced6}
+.row{display:flex;align-items:center;gap:12px;margin-top:11px}
+button{background:#14171c;color:#fff;border:0;border-radius:11px;padding:10px 20px;font:inherit;font-weight:600;cursor:pointer}
+button[disabled]{opacity:.45;cursor:default}
+.s{font-size:11.5px;color:#8b9099}
+.res{margin-top:14px}
+.sum{padding:12px 14px;background:#fff;border:1px solid #eceef2;border-radius:12px;font-size:12.5px;color:#5b616b}
+.sum b{color:#14171c}
+.c{display:flex;gap:10px;padding:13px 14px;background:#fff;border:1px solid #eceef2;border-radius:12px;margin-top:8px}
+.mk{flex:0 0 15px;font-weight:700;text-align:center;font-size:14px}
+.ok{color:#1a7f4b}.ng{color:#c02b2b}.na{color:#9a9fa8}
+.tx{flex:1;min-width:0;font-size:13px}
+.tx a{display:inline-block;font-size:11.5px;color:#3b5bdb;margin-top:3px;text-decoration:none}
+.tx small{display:block;font-size:11.5px;color:#8b9099;margin-top:2px}
+.ft{padding:0 20px 22px;font-size:11.5px;color:#9aa0a8}
+</style></head><body>
+<div class="hd"><b>Veriq</b><span>主張を1件ずつ出典で確認</span></div>
+<div class="body">
+  <textarea id="ta" placeholder="検証したい文章を貼る"></textarea>
+  <div class="row"><button id="go">検証する</button><span class="s" id="st"></span></div>
+  <div class="res" id="res"></div>
+</div>
+<div class="ft" id="ft">キーはこの端末のブラウザにだけ保存されます。</div>
+<script>
+(function(){
+  var A="https://solene-0e598278.base44.app/functions/veriqVerify";
+  var ta=document.getElementById("ta"),go=document.getElementById("go"),st=document.getElementById("st"),res=document.getElementById("res");
+  function key(){
+    var k=localStorage.getItem("veriq_key")||"";
+    if(!/^vk_[A-Za-z0-9]{10,}$/.test(k)){
+      k=(prompt("Veriq のAPIキー（vk_ で始まる文字列）を入力してください。この端末にだけ保存します。")||"").trim();
+      if(/^vk_[A-Za-z0-9]{10,}$/.test(k)){localStorage.setItem("veriq_key",k)}else{k=""}
+    }
+    return k;
+  }
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function mk(s){return s==="supported"?["✓","ok"]:s==="contradicted"?["✕","ng"]:["=","na"]}
+  function run(){
+    var text=ta.value.trim(); if(!text){st.textContent="文章が空";return}
+    var k=key(); if(!k){st.textContent="キー未設定";return}
+    go.disabled=1; st.textContent="出典を確認中…"; res.innerHTML="";
+    var t0=Date.now();
+    fetch(A,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+k},body:JSON.stringify({text:text})})
+    .then(function(r){return r.json()})
+    .then(function(j){
+      go.disabled=0;
+      if(!j.ok){st.textContent=j.error||"失敗";return}
+      var label={pass:"裏付けあり",partial:"一部のみ裏付け",fail:"矛盾あり"}[j.verdict]||j.verdict;
+      var sum='<div class="sum"><b>'+esc(label)+'</b>'+(j.trust!=null?" · 支持度 "+j.trust+"%":"")+" · "+((Date.now()-t0)/1000).toFixed(1)+"秒</div>";
+      var rows=(j.claims||[]).map(function(c){
+        var m=mk(c.state);
+        var sub=c.state==="contradicted"?"記載が矛盾しています":c.state==="not_stated"?"出典に記載なし":c.state==="unclear"?"判断できず":"裏付けあり";
+        var link=c.source_url?'<a href="'+esc(c.source_url)+'" target="_blank" rel="noopener">'+(c.source_title?esc(c.source_title)+" · ":"")+'出典を開く</a>':'<small>'+esc(sub)+'</small>';
+        return '<div class="c"><div class="mk '+m[1]+'">'+m[0]+'</div><div class="tx">'+esc(c.text)+link+'</div></div>';
+      }).join("");
+      res.innerHTML=sum+rows;
+      st.textContent="残り "+(j.quota?j.quota.remaining:"-")+" 回";
+    })
+    .catch(function(){go.disabled=0;st.textContent="通信に失敗";});
+  }
+  go.onclick=run;
+  window.addEventListener("message",function(e){
+    var d=e.data||{};
+    if(d.vq==="text"&&d.text){
+      ta.value=String(d.text).slice(0,2000);
+      window.focus(); run();
+    }
+    if(d.vq==="hi"){ try{e.source.postMessage({vq:"ready"},"*")}catch(err){} }
+  });
+  if(window.opener){ try{window.opener.postMessage({vq:"ready"},"*")}catch(e){} }
+})();
+</script></body></html>
